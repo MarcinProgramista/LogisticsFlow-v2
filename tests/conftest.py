@@ -1,4 +1,5 @@
 import os
+import pytest
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -21,3 +22,12 @@ TestingSessionLocal = sessionmaker(
 )
 
 Base.metadata.create_all(bind=engine)
+
+@pytest.fixture
+def db_session():
+    session = TestingSessionLocal()
+    try:
+        yield session
+    finally:
+        session.rollback()
+        session.close()

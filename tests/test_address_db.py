@@ -26,3 +26,23 @@ def test_create_address_in_database(db_session):
     assert saved_address.company_name == "ABC Transport"
     assert saved_address.latitude == Decimal("50.061400")
     assert saved_address.longitude == Decimal("22.004700")
+
+
+def test_create_address_with_optional_fields_in_database(db_session):
+    address = Address(
+            company_name="ABC Transport",
+            address_type="WAREHOUSE",
+            street="Przemysłowa",
+            building_number="5",
+            postal_code="22-400",
+            city="Zamość",
+            country="Poland",
+        )
+
+    db_session.add(address)
+    db_session.flush()
+
+    assert address.id is not None
+    saved_address = db_session.query(Address).filter_by(id=address.id).first()
+    assert saved_address.apartment_number is None
+    assert saved_address.notes is None

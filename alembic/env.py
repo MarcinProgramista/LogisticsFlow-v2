@@ -13,7 +13,12 @@ from app.models import Customer, Address
 # access to the values within the .ini file in use.
 config = context.config
 load_dotenv()
-database_url = os.environ["DATABASE_URL"]
+x_args = context.get_x_argument(as_dictionary=True)
+
+if x_args.get("test") == "true":
+    database_url = os.environ["TEST_DATABASE_URL"]
+else:
+    database_url = os.environ["DATABASE_URL"]
 config.set_main_option("sqlalchemy.url", database_url)
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

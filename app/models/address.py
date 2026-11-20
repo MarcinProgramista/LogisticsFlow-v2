@@ -1,4 +1,4 @@
-from sqlalchemy import String, Integer
+from sqlalchemy import String, Integer, Numeric
 from sqlalchemy.orm import Mapped, mapped_column
 from app.database import Base
 
@@ -16,4 +16,11 @@ class Address(Base):
     city: Mapped[str] = mapped_column(String(100), nullable=False)
     country: Mapped[str] = mapped_column(String(100), nullable=False)
     notes: Mapped[str | None] = mapped_column(String(1000), nullable=True)
-    
+    latitude: Mapped[float | None] = mapped_column(
+        Numeric(9, 6),
+        nullable=True
+    )
+    longitude: Mapped[float | None] = mapped_column(
+        Numeric(9, 6),
+        nullable=True
+    )

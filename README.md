@@ -8,7 +8,7 @@ The system is designed to support FTL (Full Truck Load) and LTL (Less Than Truck
 
 ## Technology Stack
 
-- Python
+- Python 3.10
 - FastAPI
 - PostgreSQL
 - SQLAlchemy
@@ -16,7 +16,20 @@ The system is designed to support FTL (Full Truck Load) and LTL (Less Than Truck
 - Pydantic
 - Pytest
 
-## Main Features
+## Current Implementation
+
+- FastAPI application with a health check endpoint
+- PostgreSQL database integration
+- SQLAlchemy ORM models:
+  - Customer
+  - Address
+  - RouteDistance
+- Database migrations using Alembic
+- Database constraints and relationships
+- Automated tests using Pytest
+- Separate test database configuration
+
+## Planned Features
 
 - Customer management
 - Transport order management
@@ -32,6 +45,8 @@ The system is designed to support FTL (Full Truck Load) and LTL (Less Than Truck
 
 ```text
 LogisticsFlow/
+├── alembic/
+│   └── versions/
 ├── app/
 │   ├── models/
 │   ├── schemas/
@@ -48,6 +63,7 @@ LogisticsFlow/
 │   └── DEVELOPMENT_PLAN.md
 ├── .env.example
 ├── .gitignore
+├── alembic.ini
 ├── README.md
 └── requirements.txt
 ```
@@ -83,7 +99,15 @@ pip install -r requirements.txt
 
 Configure the database connection using `.env.example` as a reference.
 
+Run database migrations:
+
+```bash
+alembic upgrade head
+```
+
 ## Running Tests
+
+Run the test suite:
 
 ```bash
 pytest
@@ -94,3 +118,5 @@ pytest
 **Development – MVP**
 
 The application is being developed incrementally, with tests added alongside each feature.
+
+The current development focus is on building a reliable database foundation and implementing the core components of the transport management system.

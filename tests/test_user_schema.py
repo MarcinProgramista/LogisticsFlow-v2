@@ -34,3 +34,4 @@ def test_user_response():
     assert user.id == 1
     assert user.email == "test@example.com"
     assert "hashed_password" not in user.model_dump()
+

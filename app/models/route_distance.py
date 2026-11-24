@@ -39,6 +39,6 @@ class RouteDistance(Base):
     )
 
     duration_80: Mapped[timedelta] = mapped_column(
-            Interval,
-            nullable=False
-        )
+        Interval,
+        nullable=False
+    )

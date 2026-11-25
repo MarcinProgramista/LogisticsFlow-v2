@@ -1,6 +1,6 @@
 import pytest
 from pydantic import ValidationError, field_validator
-from app.schemas.user import UserCreate, UserResponse
+from app.schemas.user import UserCreate, UserResponse, UserLogin
 
 def test_user_create_valid_data():
     user = UserCreate(
@@ -52,3 +52,19 @@ def test_user_create_password_only_spaces():
 
     with pytest.raises(ValidationError):
         UserCreate(**data)
+
+def test_user_login_valid_data():
+    user = UserLogin(
+        email="test@example.com",
+        password="Test12345"
+    )
+
+    assert user.email == "test@example.com"
+    assert user.password == "Test12345"
+
+def test_user_login_invalid_email():
+    with pytest.raises(ValidationError):
+        UserLogin(
+            email="to-nie-jest-email",
+            password="Test12345"
+        )

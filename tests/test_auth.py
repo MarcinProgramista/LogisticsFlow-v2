@@ -34,3 +34,44 @@ def test_register_user_password_too_short(client):
     )
 
     assert response.status_code == 422
+
+def test_login_user(client):
+    client.post(
+        "/auth/register",
+        json = {
+            "email": "login@example.com",
+            "password": "Test123456!"
+        }
+    )
+
+    response = client.post(
+        "/auth/login",
+        json = {
+            "email": "login@example.com",
+            "password": "Test123456!"
+        }
+    )
+
+    assert response.status_code == 200
+    assert response.json()["access_token"]
+    assert response.json()["user"]["email"] == "login@example.com"
+    assert "id" in response.json()["user"]
+
+def test_login_user_wrong_password(client):
+    client.post(
+        "/auth/register",
+        json={
+            "email": "wrongpass@example.com",
+            "password": "Test123456!"
+        }
+    )
+
+    response = client.post(
+        "/auth/login",
+        json={
+            "email": "wrongpass@example.com",
+            "password":"worngPassword123!"
+       }
+    )
+
+    assert response.status_code == 401

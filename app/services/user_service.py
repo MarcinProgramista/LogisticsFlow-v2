@@ -10,7 +10,7 @@ from app.core.security import (
     generate_refresh_token,
     hash_refresh_token
     )
-
+from datetime import datetime, timedelta, timezone
 
 def register_user(db: Session, email: str, password: str):
     result = db.execute(
@@ -71,3 +71,28 @@ def create_refresh_token(db:Session, user_id: int):
     db.flush()
 
     return raw_token
+
+def get_valid_refresh_token(db: Session, raw_token: str):
+    result = db.execute(
+        select(User, RefreshToken)
+        .where(RefreshToken.token_hash == hash_refresh_token(raw_token))
+        .join(RefreshToken, RefreshToken.user_id == User.id)
+    )
+
+    row = result.one_or_none()
+
+    if row is None:
+        return None
+    
+    user, refresh_token = row
+
+    if refresh_token.revoked_at is not None:
+        return None
+
+    if refresh_token.expires_at <= datetime.now(timezone.utc):
+        return None
+
+    if not user.is_active:
+        return None
+    
+    return user, refresh_token

@@ -9,6 +9,7 @@ from fastapi.testclient import TestClient
 from app.main import app
 from app.database import get_db
 from app.models.user import User
+from app.models.refresh_token import RefreshToken
 
 load_dotenv()
 
@@ -30,6 +31,7 @@ Base.metadata.create_all(bind=engine)
 @pytest.fixture
 def db_session():
     session = TestingSessionLocal()
+    session.execute(delete(RefreshToken))
     session.execute(delete(User))
     session.commit()
     try:

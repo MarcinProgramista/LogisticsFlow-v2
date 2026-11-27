@@ -1,9 +1,10 @@
 import pytest
 from unittest.mock import patch
+from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
-from app.services.user_service import register_user, authenticate_user
-from app.core.security import verify_password
-
+from app.services.user_service import register_user, authenticate_user, create_refresh_token
+from app.core.security import verify_password, hash_refresh_token
+from app.models.refresh_token import RefreshToken
 
 def test_register_user(db_session):
     user = register_user(
@@ -103,3 +104,21 @@ def test_authenticate_user_inactive(db_session):
     )
 
     assert result is None
+
+def test_create_refresh_token(db_session):
+    user = register_user(
+        db=db_session,
+        email="inactive@example.com",
+        password="SecurePass123"
+    )
+
+    raw_token = create_refresh_token(db_session,user.id)
+    result = db_session.execute(
+        select(RefreshToken).where(RefreshToken.user_id == user.id)
+    )
+
+    saved_token = result.scalar_one_or_none()
+
+    assert saved_token is not None
+    assert saved_token.token_hash == hash_refresh_token(raw_token)
+    assert saved_token.token_hash != raw_token

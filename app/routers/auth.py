@@ -3,7 +3,11 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.schemas.user import UserCreate, UserResponse, UserLogin, TokenResponse
-from app.services.user_service import register_user,authenticate_user
+from app.services.user_service import (
+        register_user,
+        authenticate_user,
+        create_refresh_token
+    )
 from app.core.jwt import create_access_token
 
 router = APIRouter(
@@ -49,10 +53,14 @@ def login(
             detail="Invalid email or password"
         )
     access_token = create_access_token(user.id)
-
+    refresh_token = create_refresh_token(
+        db=db,
+        user_id=user.id
+    )
+    db.commit()
     return {
         "access_token": access_token,
-        "refresh_token": "",
+        "refresh_token": refresh_token,
         "token_type": "bearer",
         "user": {
             "id": user.id,

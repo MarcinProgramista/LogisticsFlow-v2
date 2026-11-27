@@ -2,7 +2,14 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from app.models.user import User
-from app.core.security import hash_password, verify_password
+from datetime import datetime, timedelta, timezone
+from app.models.refresh_token import RefreshToken
+from app.core.security import (
+    hash_password, 
+    verify_password,
+    generate_refresh_token,
+    hash_refresh_token
+    )
 
 
 def register_user(db: Session, email: str, password: str):
@@ -48,3 +55,19 @@ def authenticate_user(db: Session, email: str, password: str):
         return None
 
     return existing_user
+
+def create_refresh_token(db:Session, user_id: int):
+    raw_token = generate_refresh_token()
+    token_hash = hash_refresh_token(raw_token)
+
+    expires_at = datetime.now(timezone.utc) + timedelta(days=7)
+
+    new_token = RefreshToken(
+        user_id=user_id,
+        token_hash=token_hash,
+        expires_at=expires_at
+    )
+    db.add(new_token)
+    db.flush()
+
+    return raw_token
